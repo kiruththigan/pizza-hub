@@ -1,0 +1,24 @@
+# misc
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+*.env
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# VS Code settings and workspace folders
+.vscode/
