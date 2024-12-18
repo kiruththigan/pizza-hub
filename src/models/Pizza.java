@@ -7,7 +7,8 @@ public class Pizza {
     private String toppings;
     private String cheese;
 
-    Pizza(String crust, String sauce, String toppings, String cheese) {
+    Pizza(int id, String crust, String sauce, String toppings, String cheese) {
+        this.id = id;
         this.crust = crust;
         this.sauce = sauce;
         this.toppings = toppings;
