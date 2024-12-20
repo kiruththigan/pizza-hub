@@ -102,7 +102,15 @@ public class OrderService {
 
         }
 
-        Order order = new Order(orderRepository.getAllOrders().size() + 1, pizza, user);
+        System.out.println("Enter the Quantity.");
+        int qty = scanner.nextInt();
+
+        System.out.println("Enter the delevery option(pickup/delevery).");
+        String deleveryOption = scanner.nextLine();
+
+        boolean isDelevery = deleveryOption.equalsIgnoreCase("delevery");
+
+        Order order = new Order(orderRepository.getAllOrders().size() + 1, pizza, qty, user, isDelevery);
 
         orderRepository.addOrder(order);
     }

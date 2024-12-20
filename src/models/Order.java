@@ -3,14 +3,18 @@ package models;
 public class Order {
     private int id;
     private Pizza pizza;
+    private int qty;
     private String status;
     private User user;
+    private boolean isDelivery;
 
-    public Order(int id, Pizza pizza, User user) {
+    public Order(int id, Pizza pizza, int qty, User user, boolean isDelivery) {
         this.id = id;
         this.pizza = pizza;
         this.user = user;
         this.status = "placed";
+        this.qty = qty;
+        this.isDelivery = isDelivery;
     }
 
     public int getId() {
@@ -29,6 +33,14 @@ public class Order {
         this.pizza = pizza;
     }
 
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+
     public User getUser() {
         return user;
     }
@@ -43,5 +55,13 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public boolean isDelivery() {
+        return isDelivery;
+    }
+
+    public void setDelivery(boolean delivery) {
+        isDelivery = delivery;
     }
 }
