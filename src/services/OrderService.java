@@ -5,13 +5,22 @@ import java.util.Scanner;
 
 import data.OrderRepository;
 import data.UserRepository;
+import models.CreditCardPayment;
+import models.DigitalWalletPayment;
 import models.Order;
+import models.PaymentStrategy;
 import models.Pizza;
+import models.PromotionStrategy;
+import models.SeasonalPromotion;
 import models.User;
+import models.OrderStatusNotifier;
 
 public class OrderService {
     private OrderRepository orderRepository = OrderRepository.getInstance();
     private UserRepository userRepository = UserRepository.getInstance();
+    private OrderStatusNotifier notifier = new OrderStatusNotifier();
+
+    double price = 1000.0;
 
     private static volatile OrderService instance;
 
@@ -63,9 +72,10 @@ public class OrderService {
                 System.out.println("Enter your Pizza ID.");
                 int pizzaId = scanner.nextInt();
                 pizza = user.getFavoritePizzas().stream().filter(p -> p.getId() == pizzaId).findFirst().orElse(null);
+                scanner.nextLine();
             }
         } else {
-            System.out.println("******** Build your own pizza. ********");
+            System.out.println("\n******** Build your own pizza. ********");
 
             System.out.println("Enter the pizza name.");
             String name = scanner.nextLine();
@@ -83,9 +93,6 @@ public class OrderService {
             System.out.println("Enter the pizza cheese.");
             String cheese = scanner.nextLine();
 
-            System.out.println("Do you want add favorite pizza? (yes/no)");
-            String favorite = scanner.nextLine();
-
             pizza = new Pizza.Builder()
                     .setId(orderRepository.getAllOrders().size() + 1)
                     .setName(name)
@@ -95,23 +102,65 @@ public class OrderService {
                     .setCheese(cheese)
                     .build();
 
-            if (favorite.equalsIgnoreCase("yes")) {
-                user.addFavoritePizza(pizza);
-                userRepository.updateUser(user);
-            }
-
         }
 
         System.out.println("Enter the Quantity.");
         int qty = scanner.nextInt();
+        scanner.nextLine();
 
         System.out.println("Enter the delevery option(pickup/delevery).");
         String deleveryOption = scanner.nextLine();
 
         boolean isDelevery = deleveryOption.equalsIgnoreCase("delevery");
 
+        System.out.println("Do you want add favorite pizza? (yes/no)");
+        String favorite = scanner.nextLine();
+
+        if (favorite.equalsIgnoreCase("yes")) {
+            user.addFavoritePizza(pizza);
+            user.setLoyaltyPoints(qty);
+            userRepository.updateUser(user);
+        }
+
         Order order = new Order(orderRepository.getAllOrders().size() + 1, pizza, qty, user, isDelevery);
 
         orderRepository.addOrder(order);
+
+        System.out.println("\n############# Your order review #############");
+        System.out.println("Id       : " + order.getId());
+        System.out.println("Pizza    : " + order.getPizza().toString());
+        System.out.println("Quantity : " + order.getQty());
+        System.out.println("Delevery : " + (order.isDelivery() ? "Delevery" : "Pickup"));
+        System.out.println("Bill     : " + order.getQty() * price);
+        System.out.println("User     : " + order.getUser().getUsername());
+
+        System.out.println("\nPay the bill : " + order.getQty() * price);
+        System.out.println("1 : Credit Card");
+        System.out.println("2 : Digital Wallets");
+        System.out.println("Select your payment method");
+        int paymentMethod = scanner.nextInt();
+
+        PromotionStrategy promotion = new SeasonalPromotion();
+        double discountedAmount = promotion.applyDiscount(order.getQty() * price);
+
+        if (paymentMethod == 1) {
+            PaymentStrategy payment = new CreditCardPayment();
+            payment.pay(discountedAmount);
+        } else {
+            PaymentStrategy payment = new DigitalWalletPayment();
+            payment.pay(discountedAmount);
+        }
+
+        notifier.registerObserver(user);
+        notifier.setStatus("Order Received");
+        notifier.setStatus("Preparing");
+
+        if (isDelevery) {
+            notifier.setStatus("Out for Delivery");
+            notifier.setStatus("Delivered");
+        } else {
+            notifier.setStatus("Ready for Pickup");
+        }
+
     }
 }

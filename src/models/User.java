@@ -3,15 +3,23 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class User implements Observer {
     private int id;
     private String username;
     private List<Pizza> favoritePizzas;
+    private double loyaltyPoints;
 
     public User(int id, String username) {
         this.id = id;
         this.username = username;
         this.favoritePizzas = new ArrayList<>();
+    }
+
+    public User(int id, String username, List<Pizza> favoritePizzas, double loyaltyPoints) {
+        this.id = id;
+        this.username = username;
+        this.favoritePizzas = favoritePizzas;
+        this.loyaltyPoints = loyaltyPoints;
     }
 
     public int getId() {
@@ -51,11 +59,24 @@ public class User {
         }
     }
 
+    public double getLoyaltyPoints() {
+        return loyaltyPoints;
+    }
+
+    public void setLoyaltyPoints(double loyaltyPoints) {
+        this.loyaltyPoints += loyaltyPoints;
+    }
+
     public void displayFavoritePizzas() {
         System.out.println("Favorites pizzas for " + username + " : ");
         for (Pizza pizza : favoritePizzas) {
             pizza.toString();
         }
+    }
+
+    @Override
+    public void update(String status) {
+        System.out.println("Notification to " + username + ": Your order is now " + status);
     }
 
 }
