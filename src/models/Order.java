@@ -7,8 +7,19 @@ public class Order {
     private String status;
     private User user;
     private boolean isDelivery;
+    private int ratings;
+    private String review;
 
     public Order(int id, Pizza pizza, int qty, User user, boolean isDelivery) {
+        this.id = id;
+        this.pizza = pizza;
+        this.user = user;
+        this.status = "placed";
+        this.qty = qty;
+        this.isDelivery = isDelivery;
+    }
+
+    public Order(int id, Pizza pizza, int qty, User user, boolean isDelivery, int ratings, String review) {
         this.id = id;
         this.pizza = pizza;
         this.user = user;
@@ -63,5 +74,21 @@ public class Order {
 
     public void setDelivery(boolean delivery) {
         isDelivery = delivery;
+    }
+
+    public int getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(int ratings) {
+        this.ratings = ratings;
+    }
+
+    public String getReview() {
+        return review;
+    }
+
+    public void setReview(String review) {
+        this.review = review;
     }
 }
