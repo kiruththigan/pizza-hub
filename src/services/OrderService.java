@@ -10,6 +10,8 @@ import models.DigitalWalletPayment;
 import models.Order;
 import models.PaymentStrategy;
 import models.Pizza;
+import models.PromotionStrategy;
+import models.SeasonalPromotion;
 import models.User;
 import models.OrderStatusNotifier;
 
@@ -138,12 +140,15 @@ public class OrderService {
         System.out.println("Select your payment method");
         int paymentMethod = scanner.nextInt();
 
+        PromotionStrategy promotion = new SeasonalPromotion();
+        double discountedAmount = promotion.applyDiscount(order.getQty() * price);
+
         if (paymentMethod == 1) {
             PaymentStrategy payment = new CreditCardPayment();
-            payment.pay(order.getQty() * price);
+            payment.pay(discountedAmount);
         } else {
             PaymentStrategy payment = new DigitalWalletPayment();
-            payment.pay(order.getQty() * price);
+            payment.pay(discountedAmount);
         }
 
         notifier.registerObserver(user);
