@@ -152,15 +152,22 @@ public class OrderService {
         }
 
         notifier.registerObserver(user);
+
+        order.updateState();
         notifier.setStatus("Order Received");
+
+        order.updateState();
         notifier.setStatus("Preparing");
 
         if (isDelevery) {
+            order.updateState();
             notifier.setStatus("Out for Delivery");
-            notifier.setStatus("Delivered");
         } else {
             notifier.setStatus("Ready for Pickup");
+            order.updateState();
         }
+        order.updateState();
+        notifier.setStatus("Delivered");
 
     }
 }
