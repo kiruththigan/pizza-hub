@@ -5,6 +5,7 @@ public class Order {
     private Pizza pizza;
     private int qty;
     private String status;
+    private OrderState state;
     private User user;
     private boolean isDelivery;
     private int ratings;
@@ -14,7 +15,7 @@ public class Order {
         this.id = id;
         this.pizza = pizza;
         this.user = user;
-        this.status = "placed";
+        this.state = new PlacedState();
         this.qty = qty;
         this.isDelivery = isDelivery;
     }
@@ -23,7 +24,17 @@ public class Order {
         this.id = id;
         this.pizza = pizza;
         this.user = user;
-        this.status = "placed";
+        this.state = new PlacedState();
+        this.qty = qty;
+        this.isDelivery = isDelivery;
+    }
+
+    public Order(int id, Pizza pizza, int qty, User user, OrderState orderState, boolean isDelivery, int ratings,
+            String review) {
+        this.id = id;
+        this.pizza = pizza;
+        this.user = user;
+        this.state = orderState;
         this.qty = qty;
         this.isDelivery = isDelivery;
     }
@@ -60,12 +71,16 @@ public class Order {
         this.user = user;
     }
 
-    public String getStatus() {
-        return status;
+    public OrderState getState() {
+        return state;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setState(OrderState orderState) {
+        this.state = orderState;
+    }
+
+    public void updateState() {
+        state.updateState(this);
     }
 
     public boolean isDelivery() {
