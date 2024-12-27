@@ -6,4 +6,6 @@ public interface Subject {
     void removeObserver(Observer observer);
 
     void notifyObservers(String status);
+
+    void clearObservers();
 }

@@ -17,6 +17,7 @@ import models.Pizza;
 import models.PizzaComponent;
 import models.PromotionHandler;
 import models.PromotionStrategy;
+import models.ScannerInstance;
 import models.SeasonalPromotion;
 import models.SpecialPackagingDecorator;
 import models.ToppingValidationHandler;
@@ -45,7 +46,7 @@ public class OrderService {
     }
 
     public void placeOrder() {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = ScannerInstance.getInstance();
 
         User user = selectUser(scanner);
         if (user == null) {
@@ -67,37 +68,11 @@ public class OrderService {
                 int pizzaId = scanner.nextInt();
                 pizza = user.getFavoritePizzas().stream().filter(p -> p.getId() == pizzaId).findFirst().orElse(null);
                 scanner.nextLine();
+            } else {
+                pizza = buildPizza(scanner);
             }
         } else {
-            // System.out.println("\n******** Build your own pizza. ********");
-
-            // System.out.println("Enter the pizza name.");
-            // String name = scanner.nextLine();
-
-            // System.out.println("Enter the pizza crust.");
-            // String crust = scanner.nextLine();
-
-            // System.out.println("Enter the pizza sauce.");
-            // String sauce = scanner.nextLine();
-
-            // System.out.println("Enter the pizza toppings.");
-            // System.out.println("Ex :- pepperoni, mushrooms, onions, bacon");
-            // String toppings = scanner.nextLine();
-
-            // System.out.println("Enter the pizza cheese.");
-            // String cheese = scanner.nextLine();
-
-            // pizza = new Pizza.Builder()
-            // .setId(orderRepository.getAllOrders().size() + 1)
-            // .setName(name)
-            // .setCrust(crust)
-            // .setSauce(sauce)
-            // .addToppings(toppings)
-            // .setCheese(cheese)
-            // .build();
-
             pizza = buildPizza(scanner);
-
         }
 
         PizzaComponent basicPizza = new BasicPizza();
@@ -184,7 +159,7 @@ public class OrderService {
         }
         order.updateState();
         notifier.setStatus("Delivered");
-
+        notifier.clearObservers();
     }
 
     public User selectUser(Scanner scanner) {
@@ -235,5 +210,66 @@ public class OrderService {
                 .addToppings(toppings)
                 .setCheese(cheese)
                 .build();
+    }
+
+    public void viewAllOrders() {
+        List<Order> orders = orderRepository.getAllOrders();
+        if (orders.size() == 0) {
+            System.out.println("No orders found.");
+        } else {
+            System.out.println("Orders : ");
+            for (Order order : orders) {
+                System.out.println(order.getId() + " : " + order.getPizza().toString() + " - " + order.getQty());
+            }
+        }
+    }
+
+    public void viewOrderById() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter order id : ");
+        int id = scanner.nextInt();
+        Order order = orderRepository.findOrderById(id);
+        if (order == null) {
+            System.out.println("Order not found.");
+        } else {
+            System.out.println("Id       : " + order.getId());
+            System.out.println("Pizza    : " + order.getPizza().toString());
+            System.out.println("Quantity : " + order.getQty());
+            System.out.println("Delevery : " + (order.isDelivery() ? "Delevery" : "Pickup"));
+            System.out.println("User     : " + order.getUser().getUsername());
+            System.out.println("Bill     : " + order.getTotalBill());
+            System.out.println("Rating   : " + order.getRatings());
+            System.out.println("Review   : " + order.getReview());
+        }
+    }
+
+    public void updateOrderRating() {
+        Scanner scanner = ScannerInstance.getInstance();
+        System.out.println("Enter order id : ");
+        int id = scanner.nextInt();
+        Order order = orderRepository.findOrderById(id);
+        if (order == null) {
+            System.out.println("Order not found.");
+        } else {
+            System.out.println("Enter new rating(1-low, 5-high) : ");
+            int rating = scanner.nextInt();
+            order.setRatings(rating);
+            orderRepository.updateOrder(order);
+        }
+    }
+
+    public void updateOrderFeedback() {
+        Scanner scanner = ScannerInstance.getInstance();
+        System.out.println("Enter order id : ");
+        int id = scanner.nextInt();
+        Order order = orderRepository.findOrderById(id);
+        if (order == null) {
+            System.out.println("Order not found.");
+        } else {
+            System.out.println("Enter new feedback : ");
+            String feedback = scanner.nextLine();
+            order.setReview(feedback);
+            orderRepository.updateOrder(order);
+        }
     }
 }

@@ -52,4 +52,21 @@ public class OrderRepository {
         }
         return allOrders;
     }
+
+    public void updateOrder(Order order) {
+        List<Order> userOrders = orders.get(order.getUser().getId());
+        for (Order o : userOrders) {
+            if (o.getId() == order.getId()) {
+                o.setPizza(order.getPizza());
+                o.setQty(order.getQty());
+                o.setState(order.getState());
+                o.setDelivery(order.isDelivery());
+                o.setTotalBill(order.getTotalBill());
+                o.setRatings(order.getRatings());
+                o.setReview(order.getReview());
+                System.out.println("Order " + order.getId() + " rating updated.");
+                return;
+            }
+        }
+    }
 }

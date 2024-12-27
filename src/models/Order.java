@@ -4,7 +4,6 @@ public class Order {
     private int id;
     private Pizza pizza;
     private int qty;
-    private String status;
     private OrderState state;
     private User user;
     private boolean isDelivery;

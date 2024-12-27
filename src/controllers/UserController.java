@@ -25,4 +25,16 @@ public class UserController {
         userService.registerUser();
     }
 
+    public void viewAllUsers() {
+        userService.viewAllUsers();
+    }
+
+    public void viewUserById() {
+        userService.viewUserById();
+    }
+
+    public void updateUsername() {
+        userService.updateUsername();
+    }
+
 }
