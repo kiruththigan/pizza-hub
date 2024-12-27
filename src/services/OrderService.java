@@ -5,13 +5,21 @@ import java.util.Scanner;
 
 import data.OrderRepository;
 import data.UserRepository;
+import models.BasicPizza;
 import models.CreditCardPayment;
+import models.DeliveryFeeHandler;
 import models.DigitalWalletPayment;
+import models.ExtraCheeseDecorator;
 import models.Order;
+import models.OrderHandler;
 import models.PaymentStrategy;
 import models.Pizza;
+import models.PizzaComponent;
+import models.PromotionHandler;
 import models.PromotionStrategy;
 import models.SeasonalPromotion;
+import models.SpecialPackagingDecorator;
+import models.ToppingValidationHandler;
 import models.User;
 import models.OrderStatusNotifier;
 
@@ -19,8 +27,6 @@ public class OrderService {
     private OrderRepository orderRepository = OrderRepository.getInstance();
     private UserRepository userRepository = UserRepository.getInstance();
     private OrderStatusNotifier notifier = new OrderStatusNotifier();
-
-    double price = 1000.0;
 
     private static volatile OrderService instance;
 
@@ -41,20 +47,8 @@ public class OrderService {
     public void placeOrder() {
         Scanner scanner = new Scanner(System.in);
 
-        // Display all users
-        List<User> users = userRepository.getAllUsers();
-        System.out.println("Available users:");
-        for (User user : users) {
-            System.out.println("ID: " + user.getId() + ", Name: " + user.getUsername());
-        }
-
-        System.out.println("Enter your user ID.");
-        int userId = scanner.nextInt();
-        scanner.nextLine();
-
-        User user = userRepository.findUserById(userId);
+        User user = selectUser(scanner);
         if (user == null) {
-            System.out.println("User not found. Please try again.");
             return;
         }
 
@@ -75,33 +69,50 @@ public class OrderService {
                 scanner.nextLine();
             }
         } else {
-            System.out.println("\n******** Build your own pizza. ********");
+            // System.out.println("\n******** Build your own pizza. ********");
 
-            System.out.println("Enter the pizza name.");
-            String name = scanner.nextLine();
+            // System.out.println("Enter the pizza name.");
+            // String name = scanner.nextLine();
 
-            System.out.println("Enter the pizza crust.");
-            String crust = scanner.nextLine();
+            // System.out.println("Enter the pizza crust.");
+            // String crust = scanner.nextLine();
 
-            System.out.println("Enter the pizza sauce.");
-            String sauce = scanner.nextLine();
+            // System.out.println("Enter the pizza sauce.");
+            // String sauce = scanner.nextLine();
 
-            System.out.println("Enter the pizza toppings.");
-            System.out.println("Ex :-  pepperoni,pepperoni");
-            String toppings = scanner.nextLine();
+            // System.out.println("Enter the pizza toppings.");
+            // System.out.println("Ex :- pepperoni, mushrooms, onions, bacon");
+            // String toppings = scanner.nextLine();
 
-            System.out.println("Enter the pizza cheese.");
-            String cheese = scanner.nextLine();
+            // System.out.println("Enter the pizza cheese.");
+            // String cheese = scanner.nextLine();
 
-            pizza = new Pizza.Builder()
-                    .setId(orderRepository.getAllOrders().size() + 1)
-                    .setName(name)
-                    .setCrust(crust)
-                    .setSauce(sauce)
-                    .addToppings(toppings)
-                    .setCheese(cheese)
-                    .build();
+            // pizza = new Pizza.Builder()
+            // .setId(orderRepository.getAllOrders().size() + 1)
+            // .setName(name)
+            // .setCrust(crust)
+            // .setSauce(sauce)
+            // .addToppings(toppings)
+            // .setCheese(cheese)
+            // .build();
 
+            pizza = buildPizza(scanner);
+
+        }
+
+        PizzaComponent basicPizza = new BasicPizza();
+
+        // Add enhancements using decorators
+        System.out.println("Do you want to add extra cheese? (yes/no)");
+        String extraCheese = scanner.nextLine();
+        if (extraCheese.equalsIgnoreCase("yes")) {
+            basicPizza = new ExtraCheeseDecorator(basicPizza);
+        }
+
+        System.out.println("Do you want special packaging? (yes/no)");
+        String specialPackaging = scanner.nextLine();
+        if (specialPackaging.equalsIgnoreCase("yes")) {
+            basicPizza = new SpecialPackagingDecorator(basicPizza);
         }
 
         System.out.println("Enter the Quantity.");
@@ -126,22 +137,27 @@ public class OrderService {
 
         orderRepository.addOrder(order);
 
+        OrderHandler toppingValidation = new ToppingValidationHandler();
+        toppingValidation.handle(order);
+
         System.out.println("\n############# Your order review #############");
         System.out.println("Id       : " + order.getId());
         System.out.println("Pizza    : " + order.getPizza().toString());
         System.out.println("Quantity : " + order.getQty());
         System.out.println("Delevery : " + (order.isDelivery() ? "Delevery" : "Pickup"));
-        System.out.println("Bill     : " + order.getQty() * price);
+        System.out.println("Bill     : " + order.getQty() * basicPizza.getCost());
         System.out.println("User     : " + order.getUser().getUsername());
 
-        System.out.println("\nPay the bill : " + order.getQty() * price);
+        System.out.println("\nPay the bill : " + ((order.getQty() * +basicPizza.getCost())));
         System.out.println("1 : Credit Card");
         System.out.println("2 : Digital Wallets");
         System.out.println("Select your payment method");
         int paymentMethod = scanner.nextInt();
 
+        System.out.println(basicPizza.getDescription() + " costs $" + basicPizza.getCost());
+
         PromotionStrategy promotion = new SeasonalPromotion();
-        double discountedAmount = promotion.applyDiscount(order.getQty() * price);
+        double discountedAmount = promotion.applyDiscount(order.getQty() * basicPizza.getCost());
 
         if (paymentMethod == 1) {
             PaymentStrategy payment = new CreditCardPayment();
@@ -169,5 +185,55 @@ public class OrderService {
         order.updateState();
         notifier.setStatus("Delivered");
 
+    }
+
+    public User selectUser(Scanner scanner) {
+
+        // Display all users
+        List<User> users = userRepository.getAllUsers();
+        System.out.println("Available users:");
+        for (User user : users) {
+            System.out.println("ID: " + user.getId() + ", Name: " + user.getUsername());
+        }
+
+        System.out.println("Enter your user ID.");
+        int userId = scanner.nextInt();
+        scanner.nextLine();
+
+        User user = userRepository.findUserById(userId);
+        if (user == null) {
+            System.out.println("User not found. Please try again.");
+            return null;
+        }
+
+        return user;
+    }
+
+    private Pizza buildPizza(Scanner scanner) {
+        System.out.println("\n******** Build your own pizza. ********\n");
+        System.out.println("Enter the pizza name.");
+        String name = scanner.nextLine();
+
+        System.out.println("Enter the pizza crust.");
+        String crust = scanner.nextLine();
+
+        System.out.println("Enter the pizza sauce.");
+        String sauce = scanner.nextLine();
+
+        System.out.println("Enter the pizza toppings.");
+        System.out.println("Ex :-  pepperoni, mushrooms, onions, bacon");
+        String toppings = scanner.nextLine();
+
+        System.out.println("Enter the pizza cheese.");
+        String cheese = scanner.nextLine();
+
+        return new Pizza.Builder()
+                .setId(orderRepository.getAllOrders().size() + 1)
+                .setName(name)
+                .setCrust(crust)
+                .setSauce(sauce)
+                .addToppings(toppings)
+                .setCheese(cheese)
+                .build();
     }
 }

@@ -8,6 +8,7 @@ public class Order {
     private OrderState state;
     private User user;
     private boolean isDelivery;
+    private double totalBill;
     private int ratings;
     private String review;
 
@@ -37,6 +38,16 @@ public class Order {
         this.state = orderState;
         this.qty = qty;
         this.isDelivery = isDelivery;
+    }
+
+    public Order(int id, Pizza pizza, int qty, User user, OrderState orderState, boolean isDelivery, double totalBill) {
+        this.id = id;
+        this.pizza = pizza;
+        this.user = user;
+        this.state = orderState;
+        this.qty = qty;
+        this.isDelivery = isDelivery;
+        this.totalBill = totalBill;
     }
 
     public int getId() {
@@ -89,6 +100,14 @@ public class Order {
 
     public void setDelivery(boolean delivery) {
         isDelivery = delivery;
+    }
+
+    public double getTotalBill() {
+        return totalBill;
+    }
+
+    public void setTotalBill(double totalBill) {
+        this.totalBill = totalBill;
     }
 
     public int getRatings() {
