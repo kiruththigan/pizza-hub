@@ -1,4 +1,4 @@
-package models;
+package commands;
 
 public interface Command {
     void execute();

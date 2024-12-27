@@ -225,7 +225,7 @@ public class OrderService {
     }
 
     public void viewOrderById() {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = ScannerInstance.getInstance();
         System.out.println("Enter order id : ");
         int id = scanner.nextInt();
         Order order = orderRepository.findOrderById(id);
