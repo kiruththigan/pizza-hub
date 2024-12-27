@@ -1,16 +1,22 @@
 import java.util.Scanner;
 
-import controllers.OrderController;
-import controllers.UserController;
+import commands.MenuHandler;
+import commands.PlaceOrderCommand;
+import commands.RegisterUserCommand;
+import commands.UpdateOrderFeedbackCommand;
+import commands.UpdateOrderRatingCommand;
+import commands.UpdateUsernameCommand;
+import commands.ViewAllOrdersCommand;
+import commands.ViewAllUsersCommand;
+import commands.ViewOrderByIdCommand;
+import commands.ViewUserByIdCommand;
+
 import models.ScannerInstance;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        final UserController userController = UserController.getInstance();
-        final OrderController orderController = OrderController.getInstance();
         Scanner scanner = ScannerInstance.getInstance();
 
-        scanner = new Scanner(System.in);
         boolean loop = true;
 
         while (loop) {
@@ -27,54 +33,28 @@ public class App {
             System.out.println("0   : Quit");
             System.out.print("Enter your choice: ");
 
-            String choice = scanner.nextLine();
+            MenuHandler menuHandler = new MenuHandler();
 
-            switch (choice) {
-                case "1":
-                    userController.registerUser();
-                    break;
+            menuHandler.addCommand(1, new RegisterUserCommand());
+            menuHandler.addCommand(2, new ViewAllUsersCommand());
+            menuHandler.addCommand(3, new ViewUserByIdCommand());
+            menuHandler.addCommand(4, new UpdateUsernameCommand());
+            menuHandler.addCommand(5, new PlaceOrderCommand());
+            menuHandler.addCommand(6, new ViewAllOrdersCommand());
+            menuHandler.addCommand(7, new ViewOrderByIdCommand());
+            menuHandler.addCommand(8, new UpdateOrderRatingCommand());
+            menuHandler.addCommand(8, new UpdateOrderFeedbackCommand());
 
-                case "2":
-                    userController.viewAllUsers();
-                    break;
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
-                case "3":
-                    userController.viewUserById();
-                    break;
-
-                case "4":
-                    userController.updateUsername();
-                    break;
-
-                case "5":
-                    orderController.placeOrder();
-                    break;
-
-                case "6":
-                    orderController.viewAllOrders();
-                    break;
-
-                case "7":
-                    orderController.viewOrderById();
-                    break;
-
-                case "8":
-                    orderController.updateOrderRating();
-                    break;
-
-                case "9":
-                    orderController.updateOrderFeedback();
-                    break;
-
-                case "0":
-                    scanner.close();
-                    loop = false;
-                    break;
-
-                default:
-                    System.out.println("Your input is not valid!");
-                    break;
+            if (choice == 0) {
+                loop = false;
+                scanner.close();
+            } else {
+                menuHandler.executeCommand(choice);
             }
+
         }
 
     }
