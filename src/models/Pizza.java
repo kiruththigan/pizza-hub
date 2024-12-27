@@ -75,6 +75,10 @@ public class Pizza {
         return id;
     }
 
+    public List<String> getToppings() {
+        return toppings;
+    }
+
     @Override
     public String toString() {
         return "Pizza [id=" + id + ", name=" + name + ", crust=" + crust + ", sauce=" + sauce + ", toppings="

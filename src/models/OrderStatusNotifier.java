@@ -7,7 +7,7 @@ public class OrderStatusNotifier implements Subject {
     private List<Observer> observers = new ArrayList<>();
     private String status;
 
-    @Override   
+    @Override
     public void registerObserver(Observer observer) {
         observers.add(observer);
     }
@@ -28,4 +28,10 @@ public class OrderStatusNotifier implements Subject {
         this.status = status;
         notifyObservers(status);
     }
+
+    @Override
+    public void clearObservers() {
+        observers.clear();
+    }
+
 }

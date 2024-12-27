@@ -24,4 +24,20 @@ public class OrderController {
     public void placeOrder() {
         orderService.placeOrder();
     }
+
+    public void viewAllOrders() {
+        orderService.viewAllOrders();
+    }
+
+    public void viewOrderById() {
+        orderService.viewOrderById();
+    }
+
+    public void updateOrderRating() {
+        orderService.updateOrderRating();
+    }
+
+    public void updateOrderFeedback() {
+        orderService.updateOrderFeedback();
+    }
 }
