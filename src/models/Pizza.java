@@ -66,11 +66,6 @@ public class Pizza {
         }
     }
 
-    // public String displayPizza() {
-    // System.out.println("pizza : " + name);
-    // return name;
-    // }
-
     public int getId() {
         return id;
     }

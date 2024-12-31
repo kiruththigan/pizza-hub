@@ -104,7 +104,6 @@ public class OrderService {
 
         if (favorite.equalsIgnoreCase("yes")) {
             user.addFavoritePizza(pizza);
-            user.setLoyaltyPoints(qty);
             userRepository.updateUser(user);
         }
 
@@ -132,7 +131,7 @@ public class OrderService {
         System.out.println(basicPizza.getDescription() + " costs $" + basicPizza.getCost());
 
         PromotionStrategy promotion = new SeasonalPromotion();
-        double discountedAmount = promotion.applyDiscount(order.getQty() * basicPizza.getCost());
+        double discountedAmount = promotion.applyDiscount(order.getQty() * basicPizza.getCost(), user);
 
         if (paymentMethod == 1) {
             PaymentStrategy payment = new CreditCardPayment();
@@ -141,6 +140,10 @@ public class OrderService {
             PaymentStrategy payment = new DigitalWalletPayment();
             payment.pay(discountedAmount);
         }
+        order.setTotalBill(discountedAmount);
+        orderRepository.updateOrder(order);
+        
+        user.setLoyaltyPoints(discountedAmount / 100);
 
         notifier.registerObserver(user);
 
@@ -266,7 +269,8 @@ public class OrderService {
         if (order == null) {
             System.out.println("Order not found.");
         } else {
-            System.out.println("Enter new feedback : ");
+            System.out.println("Enter feedback : ");
+            scanner.nextLine();
             String feedback = scanner.nextLine();
             order.setReview(feedback);
             orderRepository.updateOrder(order);

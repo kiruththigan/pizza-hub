@@ -12,6 +12,6 @@ public class ExtraCheeseDecorator extends ToppingDecorator {
 
     @Override
     public double getCost() {
-        return super.getCost() + 150; // Extra cost for cheese
+        return super.getCost() + 150;
     }
 }
