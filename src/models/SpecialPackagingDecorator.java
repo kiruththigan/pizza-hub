@@ -12,6 +12,6 @@ public class SpecialPackagingDecorator extends ToppingDecorator {
 
     @Override
     public double getCost() {
-        return super.getCost() + 200; // Extra cost for special packaging
+        return super.getCost() + 200; 
     }
 }

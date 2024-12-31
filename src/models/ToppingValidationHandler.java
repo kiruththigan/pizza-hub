@@ -3,7 +3,11 @@ package models;
 import java.util.List;
 
 public class ToppingValidationHandler extends OrderHandler {
-    private static final List<String> VALID_TOPPINGS = List.of("pepperoni", "mushrooms", "onions", "bacon");
+    private static final List<String> VALID_TOPPINGS = List.of(
+            "pepperoni",
+            "mushrooms",
+            "onions",
+            "bacon");
 
     @Override
     public void handle(Order order) {

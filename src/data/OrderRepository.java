@@ -7,7 +7,6 @@ import java.util.List;
 import models.Order;
 
 public class OrderRepository {
-    // private List<Order> orders = new ArrayList<>();
     private HashMap<Integer, List<Order>> orders = new HashMap<>();
 
     private static volatile OrderRepository instance;
@@ -30,7 +29,6 @@ public class OrderRepository {
         List<Order> userOrders = orders.getOrDefault(order.getUser().getId(), new ArrayList<>());
         userOrders.add(order);
         orders.put(order.getUser().getId(), userOrders);
-        // System.out.println("Order " + order.getId() + " added.");
         System.out.println(order.getPizza().toString());
     }
 
@@ -64,7 +62,7 @@ public class OrderRepository {
                 o.setTotalBill(order.getTotalBill());
                 o.setRatings(order.getRatings());
                 o.setReview(order.getReview());
-                System.out.println("Order " + order.getId() + " rating updated.");
+                System.out.println("Order " + order.getId() + " updated.");
                 return;
             }
         }
